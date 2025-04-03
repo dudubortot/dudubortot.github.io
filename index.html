@@ -82,18 +82,26 @@
                     <td rowspan="2"><button class="botao" style="height: 106px" onclick="calcular()">=</button></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><button class="botao" onclick="insert('0')">0</button></td>
-                    <td><button class="botao" onclick="insert('00')">00</button></td>
+                    <td colspan="2"><button class="botao" style="width: 106px" onclick="insert('0')">0</button></td>
                     <td><button class="botao" onclick="insert('.')">.</button></td>
                 </tr>
             </table>
         </div>
     </div>
     <script>
-        function insert(num)
-        {
-            var numero = document.getElementById('resultado').innerHTML;
-            document.getElementById('resultado').innerHTML = numero + num;
+        let isResultDisplayed = false; 
+        function insert(num) {
+            const resultado = document.getElementById('resultado');
+            if (isResultDisplayed && !isNaN(num)) {
+                resultado.innerHTML = '';
+                isResultDisplayed = false;
+            }
+            if (isResultDisplayed && (num === '+' || num === '-' || num === '*' || num === '/')) {
+                isResultDisplayed = false;
+            }
+            if (resultado.innerHTML.length < 14) {
+                resultado.innerHTML += num;
+            }
         }
         function clean()
         {
@@ -104,19 +112,56 @@
             var resultado = document.getElementById('resultado').innerHTML;
             document.getElementById('resultado').innerHTML = resultado.substring(0, resultado.length -1);
         }
-        function calcular()
-        {
-            var resultado = document.getElementById('resultado').innerHTML;
-            if(resultado)
-            {
-                document.getElementById('resultado').innerHTML = eval(resultado);
+        function calcular() {
+            const resultado = document.getElementById('resultado').innerHTML;
+
+            if (resultado) {
+                try {
+                    if (resultado.includes('/0')) {
+                        document.getElementById('resultado').innerHTML = "Picanhaaa";
+                        setTimeout(clean, 2000);
+                        return;
+                    }
+                    document.getElementById('resultado').innerHTML = eval(resultado);
+                    isResultDisplayed = true;
+                } catch (error) {
+                    document.getElementById('resultado').innerHTML = "Erro";
+                    setTimeout(clean, 1000);
+                }
+            } else {
+                document.getElementById('resultado').innerHTML = "Tente novamente.";
+                setTimeout(clean, 1000);
             }
-            else
-            {
-                document.getElementById('resultado').innerHTML = "Tente novamente.", clean();
-            }
-            
         }
+
+        document.addEventListener('keydown', function(event) {
+            const key = event.key; 
+            if (!isNaN(key)) {
+                event.preventDefault();
+                insert(key);
+            } else if (key === '.') {
+                event.preventDefault()
+                insert('.');
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                back();
+            } else if (key === 'Enter') {
+                event.preventDefault();
+                calcular();
+            } else if (key === '+') {
+                event.preventDefault()
+                insert('+');
+            } else if (key === '-') {
+                event.preventDefault()
+                insert('-');
+            } else if (key === '*') {
+                event.preventDefault()
+                insert('*');
+            } else if (key === '/') {
+                event.preventDefault()
+                insert('/');
+            }
+        });
     </script>
 </body>
 </html>
