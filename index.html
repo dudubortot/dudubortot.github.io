@@ -92,13 +92,24 @@
         let isResultDisplayed = false; 
         function insert(num) {
             const resultado = document.getElementById('resultado');
+
             if (isResultDisplayed && !isNaN(num)) {
                 resultado.innerHTML = '';
                 isResultDisplayed = false;
             }
+
             if (isResultDisplayed && (num === '+' || num === '-' || num === '*' || num === '/')) {
                 isResultDisplayed = false;
             }
+
+            if (num === '.') {
+                const termos = resultado.innerHTML.split(/[\+\-\*\/]/);
+                const ultimoTermo = termos[termos.length - 1];
+                if (ultimoTermo.includes('.')) {
+                    return; 
+                }
+            }
+
             if (resultado.innerHTML.length < 14) {
                 resultado.innerHTML += num;
             }
@@ -118,11 +129,13 @@
             if (resultado) {
                 try {
                     if (resultado.includes('/0')) {
-                        document.getElementById('resultado').innerHTML = "Picanhaaa";
+                        document.getElementById('resultado').innerHTML = "Erro: Picanha";
                         setTimeout(clean, 2000);
                         return;
                     }
-                    document.getElementById('resultado').innerHTML = eval(resultado);
+                    const valor = eval(resultado);
+                    const valorArredondado = parseFloat(valor.toFixed(10)); 
+                    document.getElementById('resultado').innerHTML = valorArredondado;
                     isResultDisplayed = true;
                 } catch (error) {
                     document.getElementById('resultado').innerHTML = "Erro";
